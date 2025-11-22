@@ -1,15 +1,12 @@
-﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
 
-namespace Api.Test.User
+namespace Api.Test.Features.User;
+
+public class UserGetTest
 {
-    [TestClass]
-    public class UserGetTest
+    [Fact]
+    public void UserGetTest_Should_Return_True() // Testing Tests :D
     {
-        [TestMethod]
-        public void TrueTest()
-        {
-            true.Should().BeTrue();
-        }
+        true.Should().BeTrue();
     }
 }
