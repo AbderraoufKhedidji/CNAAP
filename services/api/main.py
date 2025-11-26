@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-from services.api.features.routers_service import RoutersService
+from api.features.routers_service import RoutersService
 
 app = FastAPI(title="Mi API con FastAPI")
 

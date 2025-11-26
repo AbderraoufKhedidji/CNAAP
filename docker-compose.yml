@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: cnaap-postgres
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cnaap_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cnaap-network
+
+  mongo:
+    container_name: cnaap-mongo
+    image: mongo:7
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - cnaap-network
+
+networks:
+  cnaap-network:
+
+volumes:
+  postgres_data:
+  mongo_data:
