@@ -1,14 +1,12 @@
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import IdColumn, StringCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
-from sqlmodel import Field, Relationship
+class ComplianceStandard(EntityBase):
+    __tablename__ = "compliance_standard"
 
-from services._shared.domain.entities.control import Control
-from .bases.entity_base import EntityBase
-from typing import Optional
+    name = StringCol(nullable=False)
+    description = StringCol(nullable=True)
+    cloud_type = StringCol(nullable=True)
 
-class ComplianceStandard(EntityBase, table=True):
-    standard_id: str = Field(primary_key=True)
-    name: str
-    description: Optional[str]
-    cloud_type: Optional[str]
-
-    controls: list["Control"] = Relationship(back_populates="standard")
+    controls = relationship("Control", back_populates="standard")

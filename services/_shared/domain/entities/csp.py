@@ -1,15 +1,14 @@
-from typing import Optional
-from sqlmodel import Field, Relationship
-from services._shared.domain.entities.policy_csp import PolicyCSP
-from services._shared.domain.entities.service_name import ServiceName
-from .bases.entity_base import EntityBase
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import IntegerCol, StringCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
+class CSP(EntityBase):
+    __tablename__ = "csp"
 
-class CSP(EntityBase, table=True):
-    cloud_type: str = Field(primary_key=True)
-    resource_name: Optional[str]
-    total_pass_policies: Optional[int]
-    total_failed_policies: Optional[int]
+    cloud_type = StringCol(primary_key=True)
+    resource_name = StringCol(nullable=True)
+    total_pass_policies = IntegerCol(nullable=True)
+    total_failed_policies = IntegerCol(nullable=True)
 
-    policies: list["PolicyCSP"] = Relationship(back_populates="csp")
-    services: list["ServiceName"] = Relationship(back_populates="csp")
+    policies = relationship("PolicyCSP", back_populates="csps")
+    services = relationship("ServiceName", back_populates="csps")

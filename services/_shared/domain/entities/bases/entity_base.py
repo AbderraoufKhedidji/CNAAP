@@ -1,11 +1,21 @@
-from sqlmodel import SQLModel, Field
 from datetime import datetime
-from typing import Optional
-from uuid import UUID
+from sqlalchemy import Column, Boolean, DateTime
+from .column_types import IdColumn
+from sqlalchemy.ext.declarative import declarative_base
 
-class EntityBase(SQLModel):
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
-    created_by: Optional[UUID] = Field(None, description="User ID who created the record")
-    updated_by: Optional[UUID] = Field(None, description="User ID who last updated the record")
-    is_deleted: Optional[bool] = Field(False, description="User ID who last updated the record")
+Base = declarative_base()
+
+class EntityBase(Base):
+    __abstract__ = True
+
+    id = IdColumn()
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_by = IdColumn(primary_key=False)
+    updated_by = IdColumn(primary_key=False)
+    is_deleted = Column(Boolean, default=False, nullable=False)
+
+    @classmethod
+    def __declare_last__(cls):
+        if not hasattr(cls, "__tablename__") or cls.__tablename__ is None:
+            cls.__tablename__ = cls.__name__.lower()

@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter
-from services.api.features.users.users_router import users_router
-from services.api.features.clients.clients_router import clients_router
+from features.users.users_router import users_router
+from features.clients.clients_router import clients_router
 
 
 class RoutersService:

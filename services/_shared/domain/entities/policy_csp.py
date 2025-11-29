@@ -1,12 +1,12 @@
-from sqlmodel import Field, Relationship
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import ForeignIdColumn, IdColumn, StringCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
-from services._shared.domain.entities.policy import Policy
-from .bases.entity_base import EntityBase
+class PolicyCSP(EntityBase):
+    __tablename__ = "policy_csp"
 
-class PolicyCSP(EntityBase, table=True):
-    policy_csp_id: str = Field(primary_key=True)
-    policy_id: str = Field(foreign_key="policy.policy_id")
-    cloud_type: str = Field(foreign_key="csp.cloud_type")
+    policy_id = IdColumn(primary_key=False)
+    cloud_type = ForeignIdColumn(foreign_key="csp.cloud_type", nullable=False)
 
-    policy: "Policy" = Relationship(back_populates="policy_csps")
-    csp: "CSP" = Relationship(back_populates="policies")
+    policies = relationship("Policy", back_populates="policy_csps")
+    csps = relationship("CSP", back_populates="policies")

@@ -1,17 +1,14 @@
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import ForeignIdColumn, IdColumn, IntegerCol, StringCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
-from sqlmodel import Field, Relationship
+class ControlSection(EntityBase):
+    __tablename__ = "control_section"
 
-from services._shared.domain.entities.control import Control
-from services._shared.domain.entities.section_policy import SectionPolicy
-from .bases.entity_base import EntityBase
-from typing import Optional
+    control_id = ForeignIdColumn(foreign_key="controls.id")
+    name = StringCol(nullable=False)
+    description = StringCol(nullable=True)
+    order_number = IntegerCol(nullable=True)
 
-class ControlSection(EntityBase, table=True):
-    section_id: str = Field(primary_key=True)
-    control_id: str = Field(foreign_key="control.control_id")
-    name: str
-    description: Optional[str]
-    order_number: Optional[int]
-
-    control: "Control" = Relationship(back_populates="sections")
-    section_policies: list["SectionPolicy"] = Relationship(back_populates="section")
+    control = relationship("Control", back_populates="sections")
+    section_policies = relationship("SectionPolicy", back_populates="section")

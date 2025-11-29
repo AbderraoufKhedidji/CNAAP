@@ -1,0 +1,73 @@
+REGLAS PARA ENTIDADES SQLALCHEMY CON COLUMN_TYPES
+
+Todos los IDs (primarios o foráneos) siempre usar IdColumn() de column_types.py.
+
+Nunca usar StringCol() para IDs.
+
+Ejemplo correcto:
+
+id = IdColumn()
+asset_type_id = IdColumn()
+
+
+Campos de texto normales: usar StringCol().
+
+Campos booleanos: usar BoolCol().
+
+Campos datetime o time: usar DateTimeCol() y TimeCol().
+
+Relaciones (relationship) deben reflejar claves foráneas y listas, pero los tipos de columna siempre vienen del fichero column_types.
+
+Archivo column_types que encapsula el tipado de columnas
+
+# services/_shared/domain/entities/column_types.py
+import uuid
+from sqlalchemy import String, DateTime, Boolean, Time
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+
+# UUID genérico compatible con cualquier base
+def gen_uuid() -> str:
+    return str(uuid.uuid4())
+
+ID = String(36)          # Para cualquier motor
+
+def IdColumn(primary_key=True, index=True):
+    from sqlalchemy import Column
+    return Column(ID, primary_key=primary_key, default=gen_uuid, index=index)
+
+# Column shortcuts
+DateTimeCol = lambda **kwargs: DateTime
+StringCol = lambda length=255, **kwargs: String(length, **kwargs)
+BoolCol = lambda **kwargs: Boolean
+TimeCol = lambda **kwargs: Time
+
+No poner comentarios
+Cualquier columna que sea un identificador (ID), aunque se refiera a otra tabla como clave foránea, siempre usar IdColumn(). Nunca usar StringCol() para IDs, aunque sean UUIDs o varchar.
+Archivo base de referencia:
+
+from typing import List, Optional
+from sqlalchemy import Column, LargeBinary, ForeignKey
+from sqlalchemy.orm import relationship
+_shared.domain.entities.bases.column_types import IdColumn, StringCol, BoolCol, DateTimeCol
+from _shared.domain.entities.bases.entity_base import EntityBase
+
+class Alert(EntityBase):
+    __tablename__ = "alert"
+
+    id = IdColumn()
+    name = Column(StringCol(), nullable=False)
+    status = Column(LargeBinary, nullable=True)
+    resolved_on = Column(DateTimeCol(), nullable=True)
+    resolution_reason = Column(StringCol(), nullable=True)
+    policy_id = IdColumn()  # Es un ID, no StringCol
+    vpc_name = Column(StringCol(), nullable=True)
+    tags = Column(StringCol(), nullable=True)
+
+    policy = relationship("Policy", back_populates="alerts")
+    event_alerts = relationship("EventAlert", back_populates="alert")
+
+
+
+ESPACIO PARA PEGAR EL .PY QUE QUIERAS TRANSFORMAR:
+
+# Pega aquí el contenido del archivo que quieres que reescriba usando column_types

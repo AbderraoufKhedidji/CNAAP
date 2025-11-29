@@ -1,14 +1,13 @@
-from typing import Optional
-from sqlmodel import Field, Relationship
-from services._shared.domain.entities.asset_type import AssetType
-from services._shared.domain.entities.event import Event
-from .bases.entity_base import EntityBase
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import IdColumn
+from _shared.domain.entities.bases.entity_base import EntityBase
 
+class EventAlert(EntityBase):
+    __tablename__ = "event_alert"
 
-class EventAlert(EntityBase, table=True):
-    event_alert_id: str = Field(primary_key=True)
-    alert_id: str = Field(foreign_key="alerts.alert_id")
-    event_id: str = Field(foreign_key="event.event_id")
+    alert_id = IdColumn()
+    event_id = IdColumn()
 
-    alert: "Alerts" = Relationship(back_populates="event_alerts")
-    event: "Event" = Relationship(back_populates="event_alerts")
+    alerts = relationship("Alert", back_populates="event_alerts")
+    events = relationship("Event", back_populates="event_alerts")

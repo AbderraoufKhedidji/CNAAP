@@ -1,12 +1,12 @@
-from sqlmodel import Field, Relationship
-from services._shared.domain.entities.asset_type import AssetType
-from services._shared.domain.entities.csp import CSP
-from .bases.entity_base import EntityBase
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import IdColumn, StringCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
-class ServiceName(EntityBase, table=True):
-    service_name_id: str = Field(primary_key=True)
-    service_name: str
-    cloud_type: str = Field(foreign_key="csp.cloud_type")
+class ServiceName(EntityBase):
+    __tablename__ = "service_names"
 
-    csp: "CSP" = Relationship(back_populates="services")
-    asset_types: list["AssetType"] = Relationship(back_populates="service")
+    name = StringCol(nullable=False)
+    cloud_type = StringCol(nullable=True)
+
+    csps = relationship("CSP", back_populates="services")
+    asset_types = relationship("AssetType", back_populates="services")

@@ -1,21 +1,18 @@
-import uuid
-from sqlmodel import Field, Relationship
-from services._shared.domain.entities.policy_csp import PolicyCSP
-from services._shared.domain.entities.section_policy import SectionPolicy
-from .bases.entity_base import EntityBase
-from typing import Optional
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import IdColumn, StringCol, BoolCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
+class Policy(EntityBase):
+    __tablename__ = "policies"
 
-class Policy(EntityBase, table=True):
-    id: str = Field(primary_key=True)
-    name: str
-    description: Optional[str]
-    policy_type: Optional[str]
-    cloud_type: Optional[str]
-    severity: Optional[str]
-    enabled: Optional[bool]
-    compliance_requirement: Optional[str]
+    name = StringCol(nullable=False)
+    description = StringCol(nullable=True)
+    policy_type = StringCol(nullable=True)
+    cloud_type = StringCol(nullable=True)
+    severity = StringCol(nullable=True)
+    enabled = BoolCol(nullable=True)
+    compliance_requirement = StringCol(nullable=True)
 
-    section_policies: list["SectionPolicy"] = Relationship(back_populates="policy")
-    policy_csps: list["PolicyCSP"] = Relationship(back_populates="policy")
-    alerts: list["Alerts"] = Relationship(back_populates="policy")
+    section_policies = relationship("SectionPolicy", back_populates="policies")
+    policy_csps = relationship("PolicyCSP", back_populates="policies")
+    alerts = relationship("Alert", back_populates="policies")

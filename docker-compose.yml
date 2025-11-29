@@ -27,6 +27,40 @@ services:
     networks:
       - cnaap-network
 
+  api:
+    container_name: cnaap-api
+    image: python:3.14
+    working_dir: /app
+    volumes:
+      - ./services/api:/app
+      - ./services/_shared:/app/_shared
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - cnaap-network
+
+  front:
+    container_name: cnaap-front
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./clients/mainFront:/app
+      - /app/node_modules
+    command: sh -c "npm install && npx astro dev --host 0.0.0.0 --port 4321"
+    ports:
+      - "4321:4321"
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      NODE_ENV: "development"
+    networks:
+      - cnaap-network
+
 networks:
   cnaap-network:
 

@@ -1,24 +1,21 @@
+from sqlalchemy.orm import relationship
+from _shared.domain.entities.bases.column_types import ForeignIdColumn, IdColumn, StringCol, DateTimeCol, TimeCol
+from _shared.domain.entities.bases.entity_base import EntityBase
 
-import datetime
-import time
-from typing import Optional
-from sqlmodel import Field, Relationship
-from services._shared.domain.entities.asset_name import AssetName
-from .bases.entity_base import EntityBase
+class Event(EntityBase):
+    __tablename__ = "event"
 
+    event_time = DateTimeCol(nullable=False) 
+    account_name = StringCol(nullable=True)  
+    region = StringCol(nullable=True)  
+    snoozed_for = StringCol(nullable=True)  
+    snoozed_expired = TimeCol(nullable=True)  
+    reason = StringCol(nullable=True)  
+    account_owners = StringCol(nullable=True)  
+    
+    #asset_id = ForeignIdColumn("assets.id")
+    #account_id = ForeignIdColumn("accounts.id")
+    #region_id = ForeignIdColumn("regions.id") 
 
-class Event(EntityBase, table=True):
-    event_id: str = Field(primary_key=True)
-    asset_id: Optional[str]
-    event_time: datetime
-    account_id: Optional[str]
-    account: Optional[str]
-    region: Optional[str]
-    snoozed_for: Optional[str]
-    snoozed_expired: Optional[time]
-    reason: Optional[str]
-    account_owners: Optional[str]
-    asset_name_id: str = Field(foreign_key="assetname.asset_name_id")
-
-    asset_name: "AssetName" = Relationship(back_populates="events")
-    event_alerts: list["EventAlert"] = Relationship(back_populates="event")
+    assets = relationship("AssetName", back_populates="events")  
+    event_alerts = relationship("EventAlert", back_populates="events")
